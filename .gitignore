@@ -3,4 +3,5 @@
 /tmptrainer
 /lab
 /__pycache__
+/classificaiton_model
 self_config.py
