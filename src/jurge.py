@@ -4,8 +4,8 @@ from datasets import Dataset , DatasetDict
 import numpy as np
 import torch
 
-MODEL1_PATH = 'classificaiton_model/saved_model'
-MODEL2_PATH = 'classificaiton_model/saved_model_response_judge'
+MODEL1_PATH = '../classificaiton_model/saved_model'
+MODEL2_PATH = '../classificaiton_model/saved_model_response_judge'
 
 class Finetuned_model_jurge():
     def __init__(self, model_path:list[str]) -> None:

@@ -48,21 +48,11 @@ You are an assistant for question-answering tasks.
 Use the following pieces of retrieved context to answer the question. 
 Question: {input} 
 
-
-Below are the advice context from your adviser based on your previous output.
-You need to give further informations based on the advice below.
-If you want to refuse to answer the question, you have to give the reason based on the advise
-If no suggestions are given, please do not reject or stop generating answers.
-Advice: {context}
-
-
 You need to continue the text from where the previous answer left off, without repeating the previous text.
-
 Previous answer:
 {answer}
 
 Continue from here:
-
 Answer:
 '''
 

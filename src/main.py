@@ -1,8 +1,7 @@
 '''
 现在尝试stream模式下的memory管理
 TODO: 
-1. jurge function暂时使用关键词匹配，这个可以调用一些网上的API
-2. size限制stream的时候限制错地方
+
 '''
 from typing import Sequence
 from langchain_core.language_models import BaseLanguageModel
@@ -21,9 +20,17 @@ from jurge import Finetuned_model_jurge
 from langchain.tools import StructuredTool
 from langchain.agents import AgentExecutor
 import random
-import config
-# import self_config
+from self_config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
+import os
 
+# langsmith setting
+os.environ["LANGCHAIN_TRACING_V2"] = "True"
+os.environ["LANGCHAIN_API_KEY"] = LANGCHAIN_API_KEY
+os.environ["LANGCHAIN_PROJECT"] = "default"
+# OPEN_AI setting
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
+os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 prompt = ChatPromptTemplate.from_messages(
         [
             ("system", SYSTEM_PROMPT),
@@ -54,6 +61,7 @@ class MainAgent():
                 ("system", SYSTEM_PROMPT),
                 MessagesPlaceholder(variable_name='chat_history'),
                 ("human", HUMAN_PROMPT),
+                ("ai", "{context}")
                 # MessagesPlaceholder(variable_name='agent_scratchpad'),
             ],
         )
@@ -87,7 +95,7 @@ class MainAgent():
         True for no problem
         False for harmful
         '''
-        print(f'[DEBUG] {text}')
+        print(f'[JURGE DEBUG] {text}')
         return self.reviewer.jurge(text)
 
     def single_stream_run(
@@ -122,10 +130,12 @@ class MainAgent():
 
             # check point
             if sentence_count == sentence_size:
-                text = self.merge_text(chrunks[-sentence_size:])
+                # print(chrunks)
+                text = self.merge_text(chrunks[-sentence_size-1:])
                 sentence_count = 0
                 if (not advice_flag) and (not self.jurge(text)):
-                    print()
+                    print
+                    print(F'[FAIL]')
 
                     return False, chrunks
                 advice_flag = False
@@ -190,8 +200,8 @@ if __name__ == "__main__":
     retriever = WebRetriever(model)
 
     paths = [
-        'classificaiton_model/saved_model',
-        'classificaiton_model/saved_model_response_judge'
+        '../classificaiton_model/saved_model',
+        '../classificaiton_model/saved_model_response_judge'
     ]
     reviewer = Finetuned_model_jurge(paths)
 
