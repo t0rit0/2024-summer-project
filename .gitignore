@@ -2,6 +2,6 @@
 /saved_model_response_judge
 /tmptrainer
 /lab
-/__pycache__
 /classificaiton_model
+/__pycache__
 self_config.py
