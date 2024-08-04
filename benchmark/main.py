@@ -9,6 +9,10 @@ import openai
 from dotenv import load_dotenv
 from judges import judge_gpt, judge_llama3, judge_rule_based
 from models import ModelGPT, ModelClaude, ModelHuggingFace
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src import MainAgent
 
 OPENAI_KEY = "sk-pganFnMz1LeRHxzBA0C8Db5f5b954015963e2d541341B829"
 
@@ -84,7 +88,12 @@ TOGETHER_API_KEY = "2061114777ddb47a9724c778a61a6a2fe4b481d079fad5c89b3b2f90ed7c
 # client_together = openai.OpenAI(api_key=TOGETHER_API_KEY,)
 
 model_class = ModelGPT if 'gpt' in args.target_model else ModelClaude if 'claude' in args.target_model else ModelHuggingFace
-target_llm = model_class(args.target_model)  
+# target_llm = model_class(args.target_model)  
+# In our test it should be agent-? like agent-4 with gpt-4
+if 'agent' in args.target_model:
+    name = 'gpt' + args.target_model[5:]
+    target_llm = MainAgent.from_default_setting(model_name=name, max_tokens=args.target_max_n_tokens, temperature=1.0)
+else: target_llm = model_class(args.target_model)
 
 with open("harmful_behaviors_jailbreakbench.csv") as file:
     requests = pd.read_csv(file)['Goal'].tolist()
@@ -102,7 +111,9 @@ for i_request, request in enumerate(requests[:args.n_requests]):
         else:
             request_reformulated = request
         print(f">>> Reformulated request: {request_reformulated}")
-        response = target_llm.get_response(request_reformulated, max_n_tokens=args.target_max_n_tokens, temperature=1.0)
+        if isinstance(target_llm, str):
+            response = target_llm.run(request_reformulated)
+        else: response = target_llm.get_response(request_reformulated, max_n_tokens=args.target_max_n_tokens, temperature=1.0)
         jailbroken_gpt = judge_gpt(client_oai, request, response) 
 
         print(f">>> Request #{i_request}, restart #{i_restart}: {response}")
@@ -110,9 +121,10 @@ for i_request, request in enumerate(requests[:args.n_requests]):
         if jailbroken_gpt:
             break
     
-    jailbroken_llama = judge_llama3(client_together, request, response)
+    # jailbroken_llama = judge_llama3(client_together, request, response)
     jailbroken_rules = judge_rule_based(response)
-    print(f">>> Request #{i_request}, restart #{i_restart}: jailbroken_gpt={jailbroken_gpt}, jailbroken_llama={jailbroken_llama}, jailbroken_rules={jailbroken_rules}")
+    # print(f">>> Request #{i_request}, restart #{i_restart}: jailbroken_gpt={jailbroken_gpt}, jailbroken_llama={jailbroken_llama}, jailbroken_rules={jailbroken_rules}")
+    print(f">>> Request #{i_request}, restart #{i_restart}: jailbroken_gpt={jailbroken_gpt}, jailbroken_rules={jailbroken_rules}")
 
     jb_artifact = {
         "i_request": i_request, 
@@ -132,8 +144,10 @@ for i_request, request in enumerate(requests[:args.n_requests]):
     print('=='*50 + '\n\n')
 
 asr_gpt = np.mean([artifact["jailbroken_gpt"] for artifact in jb_dict["jb_artifacts"]])
-asr_llama = np.mean([artifact["jailbroken_llama"] for artifact in jb_dict["jb_artifacts"]])
+# asr_llama = np.mean([artifact["jailbroken_llama"] for artifact in jb_dict["jb_artifacts"]])
 asr_rules = np.mean([artifact["jailbroken_rules"] for artifact in jb_dict["jb_artifacts"]])
-print(f"asr_gpt={asr_gpt:.0%}, asr_llama={asr_llama:.0%}, asr_rules={asr_rules:.0%}")
+# print(f"asr_gpt={asr_gpt:.0%}, asr_llama={asr_llama:.0%}, asr_rules={asr_rules:.0%}")
+print(f"asr_gpt={asr_gpt:.0%}, asr_rules={asr_rules:.0%}")
+
 
 

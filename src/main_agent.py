@@ -20,7 +20,8 @@ from jurge import Finetuned_model_jurge
 from langchain.tools import StructuredTool
 from langchain.agents import AgentExecutor
 import random
-from self_config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
+# from self_config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
+from config import OPENAI_API_KEY, TAVILY_API_KEY
 import os
 
 # langsmith setting
@@ -50,8 +51,18 @@ attitional_prompt = ChatPromptTemplate.from_messages(
     )
 
 class MainAgent():
-    def __init__(self, model_name, advisor, reviewer):
-        self.model = ChatOpenAI(
+    def __init__(
+            self, 
+            model_name: str = None, 
+            advisor = None, 
+            reviewer = None, 
+            memory_on: bool = False, 
+            model = None
+        ):
+        if (model and model_name) or (model or model_name):
+            raise ValueError(f'model and model name can only exist one of them')
+        self.model_name = model_name
+        self.model = model or ChatOpenAI(
             model_name=model_name,
             default_headers={"x-foo": "true"},
             streaming=True
@@ -60,16 +71,49 @@ class MainAgent():
             [
                 ("system", SYSTEM_PROMPT),
                 MessagesPlaceholder(variable_name='chat_history'),
+                ("ai", "{context}"),
                 ("human", HUMAN_PROMPT),
-                ("ai", "{context}")
                 # MessagesPlaceholder(variable_name='agent_scratchpad'),
             ],
         )
         self.memory = []
         self.advisor = advisor
         self.reviewer = reviewer
+        self._memory_on = memory_on
+
+    def from_default_setting(cls, model_name = None, model = None, memory_on: bool = False, model_params=None):
+        if (model and model_name) or (model or model_name):
+            raise ValueError(f'model and model name can only exist one of them')
+        
+        advisor_model = ChatOpenAI(
+            model_name="gpt-4",
+            default_headers={"x-foo": "true"},
+            streaming=True
+        )
+
+        model = model or ChatOpenAI(
+            model_name=model_name,
+            default_headers={"x-foo": "true"},
+            # streaming=True
+            **model_params
+        )
+
+        retriever = WebRetriever(advisor_model)
+
+        paths = [
+            '../classificaiton_model/saved_model',
+            '../classificaiton_model/saved_model_response_judge'
+        ]
+        reviewer = Finetuned_model_jurge(paths)
+        return cls(
+            model = model,
+            advisor = retriever, 
+            reviewer = reviewer, 
+            memory_on = memory_on  
+        )
 
     def memory2history(self):
+        if not self._memory_on: return ''
         history = []
         for character, content in self.memory:
             if character == "human":
@@ -166,14 +210,14 @@ class MainAgent():
     
     def run(self, question):
         '''run main model first, then chat with RAG, then output'''
-        chain = self.model | self.model | StrOutputParser()
+        chain = self.prompt | self.model | StrOutputParser()
         res1 = chain.invoke({"input":question, "context":"", "answer":'', "chat_history":self.memory2history()})
         
         # res1 = self.chain.invoke(question)
-        print(f'[DEBUG] result-1: {res1}')
+        # print(f'[DEBUG] result-1: {res1}')
         self.memory.append(("human", question))
         advice = self.advisor.search({"input":res1, "context":"", "chat_history":self.memory2history()})
-        print(f"[DEBUG] advice: {advice['output']}")
+        # print(f"[DEBUG] advice: {advice['output']}")
         # self.memory.append(("ai", res1))
         res2 = chain.invoke({"input":question, "context":advice['output'], "answer":'', "chat_history":self.memory2history()})
         return res2
