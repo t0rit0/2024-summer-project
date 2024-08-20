@@ -83,7 +83,7 @@ client_oai = openai.OpenAI(
     base_url="https://api.gpt.ge/v1/",
     default_headers={"x-foo": "true"}
                 )
-TOGETHER_API_KEY = "2061114777ddb47a9724c778a61a6a2fe4b481d079fad5c89b3b2f90ed7c4c0f"
+TOGETHER_API_KEY = ""
 # client_oai = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # client_together = openai.OpenAI(api_key=TOGETHER_API_KEY,)
 
