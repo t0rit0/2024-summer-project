@@ -14,6 +14,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import MainAgent
 
+orig_stdout = sys.stdout
+f = open('output1.txt', 'w')
+sys.stdout = f
+
 OPENAI_KEY = "sk-pganFnMz1LeRHxzBA0C8Db5f5b954015963e2d541341B829"
 
 # openai.base_url = "https://api.gpt.ge/v1/"
@@ -83,9 +87,10 @@ client_oai = openai.OpenAI(
     base_url="https://api.gpt.ge/v1/",
     default_headers={"x-foo": "true"}
                 )
+client = openai.OpenAI(api_key='sk-proj-BcD85TggVFz6yYRNdKqkT3BlbkFJ9wIHKUZbxgJZlr6ssfrF')
 TOGETHER_API_KEY = "2061114777ddb47a9724c778a61a6a2fe4b481d079fad5c89b3b2f90ed7c4c0f"
 # client_oai = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-# client_together = openai.OpenAI(api_key=TOGETHER_API_KEY,)
+client_together = openai.OpenAI(api_key=TOGETHER_API_KEY, base_url="https://api.together.xyz/v1")
 
 model_class = ModelGPT if 'gpt' in args.target_model else ModelClaude if 'claude' in args.target_model else ModelHuggingFace
 # target_llm = model_class(args.target_model)  
@@ -101,7 +106,12 @@ with open("harmful_behaviors_jailbreakbench.csv") as file:
 jb_dict = vars(args)
 jb_dict["jb_artifacts"] = []
 timestamp_start = datetime.datetime.now()
+start = 23
+gpt_count = 0
+llama_count = 0
+rule_count = 0
 for i_request, request in enumerate(requests[:args.n_requests]):
+    if i_request < 23: continue
     print(f">>> Request #{i_request}: {request}")
     for i_restart in range(args.n_restarts):
         if args.attack == "past":
@@ -111,9 +121,11 @@ for i_request, request in enumerate(requests[:args.n_requests]):
         else:
             request_reformulated = request
         print(f">>> Reformulated request: {request_reformulated}")
-        if isinstance(target_llm, str):
+        if isinstance(target_llm, MainAgent):
             response = target_llm.run(request_reformulated)
+            target_llm.memory_reset()
         else: response = target_llm.get_response(request_reformulated, max_n_tokens=args.target_max_n_tokens, temperature=1.0)
+        # print(f'[AI DEBUG] {response}')
         jailbroken_gpt = judge_gpt(client_oai, request, response) 
 
         print(f">>> Request #{i_request}, restart #{i_restart}: {response}")
@@ -121,10 +133,14 @@ for i_request, request in enumerate(requests[:args.n_requests]):
         if jailbroken_gpt:
             break
     
-    # jailbroken_llama = judge_llama3(client_together, request, response)
+    jailbroken_llama = judge_llama3(client_together, request, response)
     jailbroken_rules = judge_rule_based(response)
-    # print(f">>> Request #{i_request}, restart #{i_restart}: jailbroken_gpt={jailbroken_gpt}, jailbroken_llama={jailbroken_llama}, jailbroken_rules={jailbroken_rules}")
+    print(f">>> Request #{i_request}, restart #{i_restart}: jailbroken_gpt={jailbroken_gpt}, jailbroken_llama={jailbroken_llama}, jailbroken_rules={jailbroken_rules}")
     print(f">>> Request #{i_request}, restart #{i_restart}: jailbroken_gpt={jailbroken_gpt}, jailbroken_rules={jailbroken_rules}")
+    if jailbroken_gpt: gpt_count+=1
+    if jailbroken_llama: llama_count+=1
+    if jailbroken_rules: rule_count+=1
+    print(f'[DEBUG] gpt: {gpt_count}, llama: {llama_count}, rule: {rule_count}')
 
     jb_artifact = {
         "i_request": i_request, 
@@ -133,7 +149,7 @@ for i_request, request in enumerate(requests[:args.n_requests]):
         "response": response, 
         "i_restart": i_restart, 
         "jailbroken_gpt": jailbroken_gpt, 
-        # "jailbroken_llama": jailbroken_llama,
+        "jailbroken_llama": jailbroken_llama,
         "jailbroken_rules": jailbroken_rules, 
     }
     jb_dict["jb_artifacts"].append(jb_artifact)
@@ -144,10 +160,11 @@ for i_request, request in enumerate(requests[:args.n_requests]):
     print('=='*50 + '\n\n')
 
 asr_gpt = np.mean([artifact["jailbroken_gpt"] for artifact in jb_dict["jb_artifacts"]])
-# asr_llama = np.mean([artifact["jailbroken_llama"] for artifact in jb_dict["jb_artifacts"]])
+asr_llama = np.mean([artifact["jailbroken_llama"] for artifact in jb_dict["jb_artifacts"]])
 asr_rules = np.mean([artifact["jailbroken_rules"] for artifact in jb_dict["jb_artifacts"]])
-# print(f"asr_gpt={asr_gpt:.0%}, asr_llama={asr_llama:.0%}, asr_rules={asr_rules:.0%}")
+print(f"asr_gpt={asr_gpt:.0%}, asr_llama={asr_llama:.0%}, asr_rules={asr_rules:.0%}")
 print(f"asr_gpt={asr_gpt:.0%}, asr_rules={asr_rules:.0%}")
 
 
-
+sys.stdout = orig_stdout
+f.close()

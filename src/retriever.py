@@ -58,7 +58,7 @@ model = ChatOpenAI(
 
 
 class WebRetriever():
-    def __init__(self, model) -> None:
+    def __init__(self, model, verbose: bool = True) -> None:
         self.model = model
         tools = [TavilySearchResults(max_results=10)]
         self.single_prompt = single_prompt
@@ -69,7 +69,7 @@ class WebRetriever():
             tools=tools, 
             handle_parsing_errors=True, 
             return_intermediate_steps=True, 
-            verbose=True
+            verbose=verbose
         )
         self.final_agent = AgentExecutor(
             name="web search executor",
@@ -77,7 +77,7 @@ class WebRetriever():
             tools=tools, 
             handle_parsing_errors=True, 
             return_intermediate_steps=True, 
-            verbose=True
+            verbose=verbose
         )
     def search(self, inputs):
         # words = ','.join(words)
