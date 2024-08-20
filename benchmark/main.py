@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import MainAgent
 
-OPENAI_KEY = "sk-pganFnMz1LeRHxzBA0C8Db5f5b954015963e2d541341B829"
+OPENAI_KEY = ""
 
 # openai.base_url = "https://api.gpt.ge/v1/"
 # openai.default_headers = {"x-foo": "true"}
