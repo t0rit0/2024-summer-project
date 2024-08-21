@@ -3,12 +3,12 @@ import torch
 import openai
 import anthropic
 from transformers import AutoModelForCausalLM, AutoTokenizer
-OPENAI_KEY = "sk-pganFnMz1LeRHxzBA0C8Db5f5b954015963e2d541341B829"
+OPENAI_KEY = ""
 
 openai.base_url = "https://api.gpt.ge/v1/"
 openai.default_headers = {"x-foo": "true"}
 
-os.environ["HF_TOKEN"] = "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"
+os.environ["HF_TOKEN"] = ""
 
 class ModelGPT:
     def __init__(self, model_name):

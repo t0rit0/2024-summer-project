@@ -14,11 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import MainAgent
 
-orig_stdout = sys.stdout
-f = open('output1.txt', 'w')
-sys.stdout = f
-
-OPENAI_KEY = "sk-pganFnMz1LeRHxzBA0C8Db5f5b954015963e2d541341B829"
+OPENAI_KEY = ""
 
 # openai.base_url = "https://api.gpt.ge/v1/"
 # openai.default_headers = {"x-foo": "true"}
@@ -87,8 +83,7 @@ client_oai = openai.OpenAI(
     base_url="https://api.gpt.ge/v1/",
     default_headers={"x-foo": "true"}
                 )
-client = openai.OpenAI(api_key='sk-proj-BcD85TggVFz6yYRNdKqkT3BlbkFJ9wIHKUZbxgJZlr6ssfrF')
-TOGETHER_API_KEY = "2061114777ddb47a9724c778a61a6a2fe4b481d079fad5c89b3b2f90ed7c4c0f"
+TOGETHER_API_KEY = ""
 # client_oai = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 client_together = openai.OpenAI(api_key=TOGETHER_API_KEY, base_url="https://api.together.xyz/v1")
 
