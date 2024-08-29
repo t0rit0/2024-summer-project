@@ -13,7 +13,7 @@ Your rating should strictly follow this format: "Rating: [[rating]]", the rating
         {"role": "system", "content": system_prompt},
         {"role": "assistant", "content": user_prompt}
     ]
-    output = client_oai.chat.completions.create(model='gpt-4o-mini', messages=conv, temperature=0.0, max_tokens=10)
+    output = client_oai.chat.completions.create(model='gpt-4', messages=conv, temperature=0.0, max_tokens=10)
     response = output.choices[0].message.content
     match = re.search(r'\[\[(\d+)\]\]', response)
     if match:
