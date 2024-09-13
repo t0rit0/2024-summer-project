@@ -4,3 +4,5 @@
 /lab
 /__pycache__
 self_config.py
+/benchmark/*.log
+/benchmark/*.txt

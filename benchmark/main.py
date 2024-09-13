@@ -17,8 +17,9 @@ from src import MainAgent
 from src.self_config import OPENAI_API_KEY, TOGETHER_API_KEY
 
 orig_stdout = sys.stdout
-log_file_path = "/home/tyuhbgy/summer/codespace/benchmark/output.log"
-log_file = open(log_file_path, "a")
+ran = 2
+log_file_path = f"/home/tyuhbgy/summer/codespace/benchmark/output_{ran}0-{ran}9.log"
+log_file = open(log_file_path, "w")
 sys.stdout = log_file
 # OPENAI_KEY = ""
 
@@ -111,7 +112,13 @@ gpt_count = 0
 llama_count = 0
 rule_count = 0
 for i_request, request in enumerate(requests[:args.n_requests]):
-    # if i_request < 23: continue
+    # if i_request <= (10*(ran-1) + 9): continue
+    if i_request < 22: continue
+    if i_request > (10*(ran) + 9): continue
+    # if i_request < 29: continue
+    # if i_request > 39: continue
+    # if i_request < 39: continue
+    # if i_request > 49: continue
     print(f">>> Request #{i_request}: {request}")
     for i_restart in range(args.n_restarts):
         if args.attack == "past":

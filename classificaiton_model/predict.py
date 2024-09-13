@@ -23,14 +23,14 @@ def get_model(model_path):
 # text = Dataset.from_pandas(df, preserve_index=False)
 
 
-def judge_(list_string,model_path):#输入预测的文本(以string list 格数输入)，以及保存模型的位置
+def judge_(list_string,model_path):
 
     data = {'text':list_string,
                 'label':[0 for _ in range(len(list_string))]}
     text = Dataset.from_dict(data)
     toxicity = DatasetDict({'text': text})
-    tokenizer , model = get_model(model_path)#获取模型
-    def tokenize(batch):#长list处理
+    tokenizer , model = get_model(model_path)
+    def tokenize(batch):
         return tokenizer(batch["text"], padding=True, truncation=True)
     
     toxicity_encoded = toxicity.map(tokenize, batched=True, batch_size=None)
@@ -38,10 +38,10 @@ def judge_(list_string,model_path):#输入预测的文本(以string list 格数�
     trainer_ = Trainer(model=model,tokenizer=tokenizer)
 
 
-    pred = trainer_.predict(toxicity_encoded['text'])#预测
+    pred = trainer_.predict(toxicity_encoded['text'])
     print(pred)
-    #print(pred)#直接输出计算结果和损失函数
-    pred_ = np.argmax(pred.predictions, axis=1)#处理
+    #print(pred)
+    pred_ = np.argmax(pred.predictions, axis=1)
     print(pred_)#输出结果 1 代表含有危险字词， 0 代表无害
     return pred_
 

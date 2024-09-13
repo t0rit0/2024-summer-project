@@ -1,11 +1,12 @@
 from transformers import AutoTokenizer , AutoModelForSequenceClassification , Trainer
 from datasets import Dataset , DatasetDict
+from prompt_template import SORRY_LIST
 #import pandas as pd
 import numpy as np
 import torch
 
-MODEL1_PATH = '../classificaiton_model/saved_model'
-MODEL2_PATH = '../classificaiton_model/saved_model_response_judge'
+MODEL1_PATH = 'classificaiton_model/saved_model'
+MODEL2_PATH = 'classificaiton_model/saved_model_response_judge'
 
 class Finetuned_model_jurge():
     def __init__(self, model_path:list[str]) -> None:
@@ -23,6 +24,16 @@ class Finetuned_model_jurge():
         for tokenizer, model in zip(self.tokenizers, self.models):
             res &= self.each_jurge(text, model, tokenizer)
         return res
+    
+class Word_list_jurge():
+    def __init__(self, word_list:list[str]=SORRY_LIST) -> None:
+        self.word_list = word_list
+    
+    def jurge(self, text):
+        for word in self.word_list:
+            if word in text:
+                return True
+        return False
 
 
 

@@ -4,7 +4,7 @@ import os
 
 import judges
 
-os.environ["HF_HOME"] = "C:/Users/1/.cache/huggingface/hub"
+# os.environ["HF_HOME"] = "C:/Users/1/.cache/huggingface/hub"
 import argparse
 import numpy as np
 import pandas as pd

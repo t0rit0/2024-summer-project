@@ -1,16 +1,3 @@
-'''
-到现在的一些实现想法：
-1. 一个可以进行web search的agent:
-    这样可以自主生成问题来查找, 但是比较依赖里面的模型
-2. API分数每一句/一段/全部地调用，但是没有相关的敏感信息，需要agent来自主生成查询问题
-3. 关键词匹配，这样可以在生成一句后立刻查找相关信息，直接输入一个fstring进行查询，可以用比较传统的RAG再将信息交给主体LLM
-    匹配速度以及语料库的问题（现在看来API分数还挺快的）
-4. 对生成内容的区分：
-    比如你很难通过关键词区分教育内容和坏内容
-5. callback
-'''
-
-
 from langchain_openai import ChatOpenAI
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -22,9 +9,9 @@ from self_config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHA
 import os
 
 # langsmith setting
-os.environ["LANGCHAIN_TRACING_V2"] = "True"
-os.environ["LANGCHAIN_API_KEY"] = LANGCHAIN_API_KEY
-os.environ["LANGCHAIN_PROJECT"] = "default"
+# os.environ["LANGCHAIN_TRACING_V2"] = "False"
+# os.environ["LANGCHAIN_API_KEY"] = LANGCHAIN_API_KEY
+# os.environ["LANGCHAIN_PROJECT"] = "default"
 # OPEN_AI setting
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
