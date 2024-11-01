@@ -6,9 +6,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.self_config import OPENAI_API_KEY, HT_TOKEN
+from src.config import OPENAI_API_KEY, HT_TOKEN, OPENAI_API_BASE
 
-openai.base_url = "https://api.gpt.ge/v1/"
+openai.base_url = OPENAI_API_BASE
 openai.default_headers = {"x-foo": "true"}
 
 os.environ["HF_TOKEN"] = HT_TOKEN
@@ -18,7 +18,7 @@ class ModelGPT:
         self.model_name = model_name
         self.client = openai.OpenAI(
             api_key=OPENAI_API_KEY,
-            base_url="https://api.gpt.ge/v1/",
+            base_url=OPENAI_API_BASE,
             default_headers={"x-foo": "true"}
                 )
 

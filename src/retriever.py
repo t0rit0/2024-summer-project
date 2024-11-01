@@ -5,7 +5,7 @@ from langchain.agents import create_tool_calling_agent, AgentExecutor
 from prompt_template import WEB_SEARCH_SYSTEM_PROMPT, WEB_SEARCH_HUMAN_PROMPT, WEB_SEARCH_FINAL_HUMAN_PROMPT
 from typing import List
 # import config
-from self_config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
+from config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
 import os
 
 # langsmith setting

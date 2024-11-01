@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 from src import MainAgent
-from src.self_config import OPENAI_API_KEY, TOGETHER_API_KEY
+from src.config import OPENAI_API_KEY, TOGETHER_API_KEY, OPENAI_API_BASE
 from judges import judge_gpt, judge_llama3, judge_rule_based, refusal
 from models import ModelGPT, ModelClaude, ModelHuggingFace,llama
 
@@ -112,7 +112,7 @@ args = parser.parse_args()
 # load_dotenv()
 client_oai = openai.OpenAI(
     api_key=OPENAI_API_KEY,
-    base_url="https://api.gpt.ge/v1/",
+    base_url=OPENAI_API_BASE,
     default_headers={"x-foo": "true"}
                 )
 # client_oai = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))

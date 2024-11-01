@@ -14,7 +14,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import MainAgent
-from src.self_config import OPENAI_API_KEY, TOGETHER_API_KEY
+from src.config import OPENAI_API_KEY, TOGETHER_API_KEY, OPENAI_API_BASE
 
 orig_stdout = sys.stdout
 ran = 2
@@ -87,11 +87,11 @@ args = parser.parse_args()
 # load_dotenv()
 client_oai = openai.OpenAI(
     api_key=OPENAI_API_KEY,
-    base_url="https://api.gpt.ge/v1/",
+    base_url=OPENAI_API_BASE,
     default_headers={"x-foo": "true"}
                 )
 # client_oai = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-client_together = openai.OpenAI(api_key=TOGETHER_API_KEY, base_url="https://api.together.xyz/v1")
+client_together = openai.OpenAI(api_key=TOGETHER_API_KEY, base_url=OPENAI_API_BASE)
 
 model_class = ModelGPT if 'gpt' in args.target_model else ModelClaude if 'claude' in args.target_model else ModelHuggingFace
 # target_llm = model_class(args.target_model)  

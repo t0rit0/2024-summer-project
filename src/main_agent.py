@@ -16,7 +16,7 @@ from jurge import Finetuned_model_jurge, Word_list_jurge
 from langchain.tools import StructuredTool
 from langchain.agents import AgentExecutor
 import random
-from self_config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
+from config import OPENAI_API_BASE, OPENAI_API_KEY, TAVILY_API_KEY, LANGCHAIN_API_KEY
 # from config import OPENAI_API_KEY, TAVILY_API_KEY
 import os
 
