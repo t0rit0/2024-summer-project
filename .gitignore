@@ -3,6 +3,6 @@
 /tmptrainer
 /lab
 /__pycache__
-config.py
+self_config.py
 /benchmark/*.log
 /benchmark/*.txt
