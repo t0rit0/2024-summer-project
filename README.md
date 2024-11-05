@@ -1,3 +1,5 @@
+paper accepted by The 8th International Conference on E-Society, E-Education and E-Technology (ESET 2024)
+
 by Naiji Zhai( https://github.com/StevenGerrard8 )(prompt engineering and LAT method), Xianyi Tuo( https://github.com/t0rit0 )&ZhiShuo Jin(classificaiton_model and RAG method)
 aim to solve problems provided by the paper: https://arxiv.org/abs/2407.11969
 
